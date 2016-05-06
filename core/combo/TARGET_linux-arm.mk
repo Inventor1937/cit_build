@@ -119,15 +119,11 @@ $(combo_2nd_arch_prefix)TARGET_GLOBAL_CFLAGS += -fno-builtin-sin \
 			-fno-strict-volatile-bitfields
 endif
 
-# This is to avoid the dreaded warning compiler message:
-#   note: the mangling of 'va_list' has changed in GCC 4.4
-#
-# The fact that the mangling changed does not affect the NDK ABI
-# very fortunately (since none of the exposed APIs used va_list
-# in their exported C++ functions). Also, GCC 4.5 has already
-# removed the warning from the compiler.
-#
-$(combo_2nd_arch_prefix)TARGET_GLOBAL_CFLAGS += -Wno-psabi
+# Currently building with GCC 5.x yields to false positives errors
+# This ensures the build is not hatled on the following errors
+ifneq ($(filter $($(combo_2nd_arch_prefix)TARGET_GCC_VERSION), 5.1 5.1.% 5.2.% 5.3 5.3.% 6.0 6.0.%),)
+    TARGET_GLOBAL_CFLAGS += -Wno-array-bounds -Wno-strict-overflow
+endif
 
 $(combo_2nd_arch_prefix)TARGET_GLOBAL_LDFLAGS += \
 			-Wl,-z,noexecstack \
